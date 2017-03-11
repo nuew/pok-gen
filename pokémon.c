@@ -559,7 +559,7 @@ int main(int argc, char **argv) {
     .cuteness = 0xff,
     .smartness = 0xff,
     .toughness = 0xff,
-    .feel = 0xff,
+    .feel = 0,
   };
 
   struct Misc misc = {
@@ -620,7 +620,7 @@ int main(int argc, char **argv) {
       .paralyzed = 0,
       .bad_poisoned = 0
     },
-    .level = 0,
+    .level = 1,
     .pokerus = 0,
     .current_health = 0xff,
     .max_health = 0xff,
@@ -633,18 +633,158 @@ int main(int argc, char **argv) {
 
   // Parse Options
   static const char optstring[] = 
-    "12a:A:b:B:c:C:d:D:e:E:f:F:gG:hH:i:I:j:k:K:l:"
-    "L:m:M:n:N:op:P:q:Q:r:R:s:S:t:T:u:U:v:V:x:y:Y:";
-  static const char usage[] = "Usage: %s <trainer name> <pokémon name> [%s]\n";
+    "12a:A:b:B:c:C:d:D:e:E:f:F:gG:hH:i:I:j:k:K:l:L:"
+    "m:M:n:N:oOp:P:q:Q:r:R:s:S:t:T:u:U:v:V:x:y:Y:";
+  const char usage[] = 
+    "Usage: %s [options] <trainer name> <pokémon name>\n"
+    "\n"
+    "\t-s, --species <index>    The index number of the pokémon's species.\n"
+    "\t                         The default is 1 [Bulbasaur].\n"
+    "\t-i, --item <index>       The index number of the item to be held.\n"
+    "\t                         The default is 0 [Nothing].\n"
+    "\t-x, --experience <int>   The amount of experience that the pokémon shall have.\n"
+    "\t                         The default is 0.\n"
+    "\t-B, --pp-bonus <a>:<b>:<c>:<d>   A set of values from 1-3 of how many\n"
+    "\t                                 PP-Bonuses shall have been applied to\n"
+    "\t                                 each move slot. Each defaults to 0.\n"
+    "\t-f, --friendship <int>   The friendship of the generated pokémon.\n"
+    "\t                         Must be between 0-255; the default is 255.\n"
+    "\t-m, --moves <a>:<b>:<c>:<d>  The index numbers of the moves the pokémon shall have.\n"
+    "\t-P, --moves-pp <a>:<b>:<c>:<d>   The current PP of each move slot.\n"
+    "\t-j, --ev-hp <int>        The pokémon's HP effort value.\n"
+    "\t                         Must be between 0-255; the default is 255.\n"
+    "\t-v, --ev-attack <int>    The pokémon's attack effort value.\n"
+    "\t                         Must be between 0-255; the default is 255.\n"
+    "\t-e, --ev-defense <int>   The pokémon's defense effort value.\n"
+    "\t                         Must be between 0-255; the default is 255.\n"
+    "\t-V, --ev-speed <int>     The pokémon's speed effort value.\n"
+    "\t                         Must be between 0-255; the default is 255.\n"
+    "\t-K, --ev-special-attack <int>    The pokémon's special attack effort value.\n"
+    "\t                                 Must be between 0-255; the default is 255.\n"
+    "\t-E, --ev-special-defense <int>   The pokémon's HP effort value.\n"
+    "\t                                 Must be between 0-255; the default is 255.\n"
+    "\t-c, --coolness <int>   The pokémon's coolness condition.\n"
+    "\t                       Must be between 0-255; the default is 255.\n"
+    "\t-y, --beauty <int>     The pokémon's beauty condition.\n"
+    "\t                       Must be between 0-255; the default is 255.\n"
+    "\t-C, --cuteness <int>   The pokémon's cuteness condition.\n"
+    "\t                       Must be between 0-255; the default is 255.\n"
+    "\t-r, --smartness <int>  The pokémon's smartness condition.\n"
+    "\t                       Must be between 0-255; the default is 255.\n"
+    "\t-T, --toughness <int>  The pokémon's toughness condition.\n"
+    "\t                       Must be between 0-255; the default is 255.\n"
+    "\t-F, --feel <int>       The pokémon's feel (also known as luster).\n"
+    "\t                       Must be between 0-255; the default is 0.\n"
+    "\t-R, --pokerus <days remaining>:<strain>  Set pokérus status.\n"
+    "\t                       Both may be between 0-15; the defaults are 0.\n"
+    "\t-k, --met-location <index>   Set the index of the location the pokémon was met at.\n"
+    "\t                             The default is 255 [fateful encounter].\n"
+    "\t-M, --met-level <int>    Set the level the pokémon was met at.\n"
+    "\t                         Must be between 1-100; the default is 1.\n"
+    "\t-G, --met-game <colosseum-bonus|sapphire|ruby|emerald|firered|leafgreen|colosseum-xd>\n"
+    "\t                         Set the game the pokémon was met in.\n"
+    "\t-b, --pokeball <master|ultra|great|standard|safari|dive|nest|repeat|timer|luxury|premier>\n"
+    "\t                         Set the pokéball that the pokémon was caught in.\n"
+    "\t-H, --iv-hp <int>        The pokémon's HP initial value.\n"
+    "\t                         Must be between 0-255; the default is 255.\n"
+    "\t-a, --iv-attack <int>    The pokémon's HP initial value.\n"
+    "\t                         Must be between 0-255; the default is 255.\n"
+    "\t-d, --iv-defense <int>   The pokémon's HP initial value.\n"
+    "\t                         Must be between 0-255; the default is 255.\n"
+    "\t-S, --iv-speed <int>     The pokémon's HP initial value.\n"
+    "\t                         Must be between 0-255; the default is 255.\n"
+    "\t-A, --iv-special-attack <int>    The pokémon's HP initial value.\n"
+    "\t                                 Must be between 0-255; the default is 255.\n"
+    "\t-D, --iv-special-defense <int>   The pokémon's HP initial value.\n"
+    "\t                                 Must be between 0-255; the default is 255.\n"
+    "\t-g, --egg                The pokémon will be generated as an egg.\n"
+    "\t-1, --ability-primary    The pokémon will use it's primary ability.\n"
+    "\t-2, --ability-secondary  The pokémon will use it's secondary ability.\n"
+    "\t-p, --personality <personality>  The pokémon's personality.\n"
+    "\t                                 Must be an integer between 0-4,294,967,295.\n"
+    "\t                                 The default is a random number in that range.\n"
+    "\t-t, --trainer <trainer id>:<male|female>   The pokémon's trainer's id and gender.\n"
+    "\t                                           The trainer ID must be an integer between\n"
+    "\t                                           0-4,294,967,295. The default is a random number\n"
+    "\t                                           in that range and male.\n"
+    "\t-N, --met-language <ja|en|fr|it|de|ko|es>  The language the pokémon was met in.\n"
+    "\t                                           The default is en [English].\n"
+    "\t-l, --level <int>          The pokémon's level.\n"
+    "\t                           Must be between 1-100; the default is 1.\n"
+    "\t-Y, --pokerus-left <int>   Time remaining in pokérus infection.\n"
+    "\t-L, --hp <int>             Current HP. Must be between 0-255; the default is 255.\n"
+    "\t-n, --max-hp <int>         Maximum HP. Must be between 0-255; the default is 255.\n"
+    "\t-q, --attack <int>         Attack stat. Must be between 0-255; the default is 255.\n"
+    "\t-u, --defense <int>        Defense stat. Must be between 0-255; the default is 255.\n"
+    "\t-I, --speed <int>          Speed stat. Must be between 0-255; the default is 255.\n"
+    "\t-Q, --special-attack <int>   Special Attack stat.\n"
+    "\t                             Must be between 0-255; the default is 255.\n"
+    "\t-U, --special-defense <int>  Special Defense stat.\n"
+    "\t                             Must be between 0-255; the default is 255.\n"
+    "\t-o, --raw                  Output as raw bytes.\n"
+    "\t-O, --dump                 Output as a hexdump.\n"
+    "\t-h, --help                 Display this message.\n"
+    "\n";
+  static struct option long_options[] = {
+    {"species", required_argument, NULL, 's'},
+    {"item", required_argument, NULL, 'i'},
+    {"experience", required_argument, NULL, 'x'},
+    {"pp-bonus", required_argument, NULL, 'B'},
+    {"friendship", required_argument, NULL, 'f'},
+    {"moves", required_argument, NULL, 'm'},
+    {"moves-pp", required_argument, NULL, 'P'},
+    {"ev-hp", required_argument, NULL, 'j'},
+    {"ev-attack", required_argument, NULL, 'v'},
+    {"ev-defense", required_argument, NULL, 'e'},
+    {"ev-speed", required_argument, NULL, 'V'},
+    {"ev-special-attack", required_argument, NULL, 'K'},
+    {"ev-special-defense", required_argument, NULL, 'E'},
+    {"coolness", required_argument, NULL, 'c'},
+    {"beauty", required_argument, NULL, 'y'},
+    {"cuteness", required_argument, NULL, 'C'},
+    {"smartness", required_argument, NULL, 'r'},
+    {"toughness", required_argument, NULL, 'T'},
+    {"feel", required_argument, NULL, 'F'},
+    {"pokerus", required_argument, NULL, 'R'},
+    {"met-location", required_argument, NULL, 'k'},
+    {"met-level", required_argument, NULL, 'M'},
+    {"met-game", required_argument, NULL, 'G'},
+    {"pokeball", required_argument, NULL, 'b'},
+    {"iv-hp", required_argument, NULL, 'H'},
+    {"iv-attack", required_argument, NULL, 'a'},
+    {"iv-defense", required_argument, NULL, 'd'},
+    {"iv-speed", required_argument, NULL, 'S'},
+    {"iv-special-attack", required_argument, NULL, 'A'},
+    {"iv-special-defense", required_argument, NULL, 'D'},
+    {"egg", no_argument, NULL, 'g'},
+    {"ability-primary", no_argument, NULL, '1'},
+    {"ability-secondary", no_argument, NULL, '2'},
+    {"personality", required_argument, NULL, 'p'},
+    {"trainer", required_argument, NULL, 't'},
+    {"met-language", required_argument, NULL, 'N'},
+    {"level", required_argument, NULL, 'l'},
+    {"pokerus-left", required_argument, NULL, 'Y'},
+    {"hp", required_argument, NULL, 'L'},
+    {"max-hp", required_argument, NULL, 'n'},
+    {"attack", required_argument, NULL, 'q'},
+    {"defense", required_argument, NULL, 'u'},
+    {"speed", required_argument, NULL, 'I'},
+    {"special-attack", required_argument, NULL, 'Q'},
+    {"special-defense", required_argument, NULL, 'U'},
+    {"raw", no_argument, NULL, 'o'},
+    {"dump", no_argument, NULL, 'O'},
+    {"help", no_argument, NULL, 'h'},
+    {0, 0, 0, 0}
+  };
 
   if(argc <= 2) {
-    fprintf(stderr, usage, argv[0], optstring);
+    fprintf(stderr, usage, argv[0]);
     return 1;
   }
 
   int c;
   bool dump = true;
-  while((c = getopt(argc, argv, optstring)) != -1) {
+  while((c = getopt_long(argc, argv, optstring, long_options, NULL)) != -1) {
     switch(c) {
     case 's': // species; see bulbapedia:List_of_Pokémon_by_index_number_(Generation_III)
       growth.species = (uint16_t) atoi(optarg);
@@ -656,10 +796,15 @@ int main(int argc, char **argv) {
       growth.experience = (uint32_t) atoi(optarg);
       break;
     case 'B': // pp bonuses
-      growth.pp_bonus.move1 = 0;
-      growth.pp_bonus.move2 = 0;
-      growth.pp_bonus.move3 = 0;
-      growth.pp_bonus.move4 = 0;
+        char *one = strtok(optarg, ":");
+        char *two = strtok(NULL, ":");
+        char *three = strtok(NULL, ":");
+        char *four = strtok(NULL, ":");
+
+        growth.pp_bonus.move1 = (uint16_t) atoi(one);
+        growth.pp_bonus.move2 = (uint16_t) atoi(two);
+        growth.pp_bonus.move3 = (uint16_t) atoi(three);
+        growth.pp_bonus.move4 = (uint16_t) atoi(four);
       break;
     case 'f': // friendship
       growth.friendship = (uint8_t) atoi(optarg);
@@ -839,7 +984,24 @@ int main(int argc, char **argv) {
         break;
       }
     case 'N': // language met in
-      pkmn.language = (uint16_t) atoi(optarg);
+      if(!strcmp(optarg, "ja")) {
+        pkmn.language = LANGUAGE_JAPANESE;
+      } else if(!strcmp(optarg, "en")) {
+        pkmn.language = LANGUAGE_ENGLISH;
+      } else if(!strcmp(optarg, "fr")) {
+        pkmn.language = LANGUAGE_FRENCH;
+      } else if(!strcmp(optarg, "it")) {
+        pkmn.language = LANGUAGE_ITALIAN;
+      } else if(!strcmp(optarg, "de")) {
+        pkmn.language = LANGUAGE_GERMAN;
+      } else if(!strcmp(optarg, "ko")) {
+        pkmn.language = LANGUAGE_KOREAN;
+      } else if(!strcmp(optarg, "es")) {
+        pkmn.language = LANGUAGE_SPANISH;
+      } else {
+        fputs("language must be one of ja|en|fr|it|de|ko|es\n", stderr);
+        return 1;
+      }
       break;
     case 'l': // pokemon level (recalculated on game save/load)
       pkmn.level = (uint8_t) atoi(optarg);
@@ -871,9 +1033,12 @@ int main(int argc, char **argv) {
     case 'o': // dump raw
       dump = false;
       break;
+    case 'O': // hexdump
+      dump = true;
+      break;
     case 'h':
     default:
-      fprintf(stderr, usage, argv[0], optstring);
+      fprintf(stderr, usage, argv[0]);
       return 0;
     }
   }
