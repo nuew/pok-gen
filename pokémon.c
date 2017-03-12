@@ -777,11 +777,6 @@ int main(int argc, char **argv) {
     {0, 0, 0, 0}
   };
 
-  if(argc <= 2) {
-    fprintf(stderr, usage, argv[0]);
-    return 1;
-  }
-
   int c;
   bool dump = true;
   while((c = getopt_long(argc, argv, optstring, long_options, NULL)) != -1) {
@@ -802,10 +797,10 @@ int main(int argc, char **argv) {
         char *three = strtok(NULL, ":");
         char *four = strtok(NULL, ":");
 
-        growth.pp_bonus.move1 = (uint16_t) atoi(one);
-        growth.pp_bonus.move2 = (uint16_t) atoi(two);
-        growth.pp_bonus.move3 = (uint16_t) atoi(three);
-        growth.pp_bonus.move4 = (uint16_t) atoi(four);
+        growth.pp_bonus.move1 = atoi(one);
+        growth.pp_bonus.move2 = atoi(two);
+        growth.pp_bonus.move3 = atoi(three);
+        growth.pp_bonus.move4 = atoi(four);
       }
       break;
     case 'f': // friendship
@@ -1045,6 +1040,12 @@ int main(int argc, char **argv) {
       fprintf(stderr, usage, argv[0]);
       return 0;
     }
+  }
+
+  // check that positional arguments are present
+  if(argc < optind + 2) {
+    fprintf(stderr, usage, argv[0]);
+    return 1;
   }
 
   // copy positional arguments  
