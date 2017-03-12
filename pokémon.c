@@ -796,6 +796,7 @@ int main(int argc, char **argv) {
       growth.experience = (uint32_t) atoi(optarg);
       break;
     case 'B': // pp bonuses
+      {
         char *one = strtok(optarg, ":");
         char *two = strtok(NULL, ":");
         char *three = strtok(NULL, ":");
@@ -805,6 +806,7 @@ int main(int argc, char **argv) {
         growth.pp_bonus.move2 = (uint16_t) atoi(two);
         growth.pp_bonus.move3 = (uint16_t) atoi(three);
         growth.pp_bonus.move4 = (uint16_t) atoi(four);
+      }
       break;
     case 'f': // friendship
       growth.friendship = (uint8_t) atoi(optarg);
@@ -981,26 +983,28 @@ int main(int argc, char **argv) {
           fputs("gender must be 'male' or 'female'\n", stderr);
           return 1;
         }
-        break;
       }
+      break;
     case 'N': // language met in
-      if(!strcmp(optarg, "ja")) {
-        pkmn.language = LANGUAGE_JAPANESE;
-      } else if(!strcmp(optarg, "en")) {
-        pkmn.language = LANGUAGE_ENGLISH;
-      } else if(!strcmp(optarg, "fr")) {
-        pkmn.language = LANGUAGE_FRENCH;
-      } else if(!strcmp(optarg, "it")) {
-        pkmn.language = LANGUAGE_ITALIAN;
-      } else if(!strcmp(optarg, "de")) {
-        pkmn.language = LANGUAGE_GERMAN;
-      } else if(!strcmp(optarg, "ko")) {
-        pkmn.language = LANGUAGE_KOREAN;
-      } else if(!strcmp(optarg, "es")) {
-        pkmn.language = LANGUAGE_SPANISH;
-      } else {
-        fputs("language must be one of ja|en|fr|it|de|ko|es\n", stderr);
-        return 1;
+      {
+        if(!strcmp(optarg, "ja")) {
+          pkmn.language = LANGUAGE_JAPANESE;
+        } else if(!strcmp(optarg, "en")) {
+          pkmn.language = LANGUAGE_ENGLISH;
+        } else if(!strcmp(optarg, "fr")) {
+          pkmn.language = LANGUAGE_FRENCH;
+        } else if(!strcmp(optarg, "it")) {
+          pkmn.language = LANGUAGE_ITALIAN;
+        } else if(!strcmp(optarg, "de")) {
+          pkmn.language = LANGUAGE_GERMAN;
+        } else if(!strcmp(optarg, "ko")) {
+          pkmn.language = LANGUAGE_KOREAN;
+        } else if(!strcmp(optarg, "es")) {
+          pkmn.language = LANGUAGE_SPANISH;
+        } else {
+          fputs("language must be one of ja|en|fr|it|de|ko|es\n", stderr);
+          return 1;
+        }
       }
       break;
     case 'l': // pokemon level (recalculated on game save/load)
