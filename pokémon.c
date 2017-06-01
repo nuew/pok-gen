@@ -636,7 +636,7 @@ int main(int argc, char **argv) {
     "12a:A:b:B:c:C:d:D:e:E:f:F:gG:hH:i:I:j:k:K:l:L:"
     "m:M:n:N:oOp:P:q:Q:r:R:s:S:t:T:u:U:v:V:x:y:Y:";
   const char usage[] = 
-    "Usage: %s [options] <trainer name> <pokémon name>\n"
+    "Usage: %s [options] <pokémon name> <trainer name>\n"
     "\n"
     "\t-s, --species <index>    The index number of the pokémon's species.\n"
     "\t                         The default is 1 [Bulbasaur].\n"
