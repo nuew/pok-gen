@@ -153,6 +153,7 @@ struct Misc {
 #define LANGUAGE_GERMAN 0x0205
 #define LANGUAGE_KOREAN 0x0206
 #define LANGUAGE_SPANISH 0x0207
+#define LANGUAGE_EGG 0x0601
 
 #define MARKING_BULLET 0
 #define MARKING_SQUARE 1
@@ -952,7 +953,10 @@ int main(int argc, char **argv) {
       misc.ivs.special_defense = atoi(optarg);
       break;
     case 'g': // is an egg?
-      misc.ivs.egg = 1;
+      {
+        misc.ivs.egg = 1;
+        pkmn.language = LANGUAGE_EGG;
+      }
       break;
     case '1': // use primary ability (default)
       misc.ivs.ability = ABILITY_PRIMARY;
@@ -982,7 +986,9 @@ int main(int argc, char **argv) {
       break;
     case 'N': // language met in
       {
-        if(!strcmp(optarg, "ja")) {
+        if(misc.ivs.egg || pkmn.language == LANGUAGE_EGG) {
+          fputs("Cannot set a language for eggs. Disregarding.", stderr);
+        } else if(!strcmp(optarg, "ja")) {
           pkmn.language = LANGUAGE_JAPANESE;
         } else if(!strcmp(optarg, "en")) {
           pkmn.language = LANGUAGE_ENGLISH;
@@ -1052,10 +1058,7 @@ int main(int argc, char **argv) {
   char nickname[NICKNAME_LENGTH], trainer_name[TRAINER_NAME_LENGTH];
 
   strncpy(nickname, argv[optind], NICKNAME_LENGTH);
-  nickname[NICKNAME_LENGTH-1] = 0;
-
   strncpy(trainer_name, argv[optind + 1], TRAINER_NAME_LENGTH);
-  nickname[TRAINER_NAME_LENGTH-1] = 0;
 
   // Finalize structure
   assert(pcsconv(nickname, NICKNAME_LENGTH, LANGUAGE_ENGLISH) == true);
