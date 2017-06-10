@@ -987,7 +987,7 @@ int main(int argc, char **argv) {
     case 'N': // language met in
       {
         if(misc.ivs.egg || pkmn.language == LANGUAGE_EGG) {
-          fputs("Cannot set a language for eggs. Disregarding.", stderr);
+          fputs("Cannot set a language for eggs. Disregarding.\n", stderr);
         } else if(!strcmp(optarg, "ja")) {
           pkmn.language = LANGUAGE_JAPANESE;
         } else if(!strcmp(optarg, "en")) {
